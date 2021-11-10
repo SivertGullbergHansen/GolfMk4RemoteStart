@@ -17,7 +17,7 @@
 ## Description
 This Arduino sketch is specifically made and tested for a Volkswagen Golf MK4 GTI, but it will most likely work on older cars as long as the immobilizer is removed/defeated.
 
-You will need to have a neutral switch in your car if it is a manual car, you can easily connect this switch to a arduino pin. 
+You will need to have a neutral switch in your car if it is a manual car, you can easily connect this switch to an arduino pin. 
 
 Our Arduino Sketch requires a SIM card-reader that you can send SMS messages to. We wrote the sketch specifically for the **sim800l gsm module**. 
 We recommend using a prepaid card for your sim, as it is free to receive messages. 
