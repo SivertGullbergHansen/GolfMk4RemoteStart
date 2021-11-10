@@ -3,7 +3,7 @@
 <img src="https://raw.githubusercontent.com/SivertGullbergHansen/GolfMk4RemoteStart/main/Media/title.png" style="max-width: 100%;" width="60%"><br/></p>
 
 <p align=”center”>
-![GitHub issues](https://img.shields.io/github/issues/SivertGullbergHansen/GolfMk4RemoteStart) ![GitHub forks](https://img.shields.io/github/forks/SivertGullbergHansen/GolfMk4RemoteStart) ![GitHub stars](https://img.shields.io/github/stars/SivertGullbergHansen/GolfMk4RemoteStart) ![GitHub license](https://img.shields.io/github/license/SivertGullbergHansen/GolfMk4RemoteStart)
+<img src="https://img.shields.io/github/issues/SivertGullbergHansen/GolfMk4RemoteStart"> <img src="https://img.shields.io/github/forks/SivertGullbergHansen/GolfMk4RemoteStart"> <img src="https://img.shields.io/github/stars/SivertGullbergHansen/GolfMk4RemoteStart"> <img src="https://img.shields.io/github/license/SivertGullbergHansen/GolfMk4RemoteStart">
 </p>
 
 ## Requirements
