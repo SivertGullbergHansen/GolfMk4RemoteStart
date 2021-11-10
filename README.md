@@ -6,7 +6,7 @@
 
 ## Requirements
 - :computer: An arduino
-- :floppy_disk: A sim-card module you can read a sim-card with
+- :floppy_disk: A sim-card module that can read and send messages
 - :iphone: A phone that can send messages
 - :calling: A sim-card that can receive messages
 - :gear: A neutral-switch in your car
