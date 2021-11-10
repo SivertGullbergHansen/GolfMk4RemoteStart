@@ -1,9 +1,12 @@
 <p align="center">
 <img src="https://raw.githubusercontent.com/SivertGullbergHansen/GolfMk4RemoteStart/main/Media/logo.png" style="max-width: 100%;" width="25%"><br/><br/>
-<img src="https://raw.githubusercontent.com/SivertGullbergHansen/GolfMk4RemoteStart/main/Media/title.png" style="max-width: 100%;" width="60%"><br/></p>
+<img src="https://raw.githubusercontent.com/SivertGullbergHansen/GolfMk4RemoteStart/main/Media/title.png" style="max-width: 100%;" width="60%"><br/>
+</p>
 
-<img align=”center” src="https://img.shields.io/github/issues/SivertGullbergHansen/GolfMk4RemoteStart"> <img align=”center” src="https://img.shields.io/github/forks/SivertGullbergHansen/GolfMk4RemoteStart"> <img align=”center” src="https://img.shields.io/github/stars/SivertGullbergHansen/GolfMk4RemoteStart"> <img align=”center” src="https://img.shields.io/github/license/SivertGullbergHansen/GolfMk4RemoteStart">
-
+<p align="center">
+<img src="https://img.shields.io/github/issues/SivertGullbergHansen/GolfMk4RemoteStart"> <img src="https://img.shields.io/github/forks/SivertGullbergHansen/GolfMk4RemoteStart"> <img src="https://img.shields.io/github/stars/SivertGullbergHansen/GolfMk4RemoteStart"> <img src="https://img.shields.io/github/license/SivertGullbergHansen/GolfMk4RemoteStart">
+</p>
+  
 ## Requirements
 - :computer: An arduino
 - :floppy_disk: A sim-card module that can read and send messages
