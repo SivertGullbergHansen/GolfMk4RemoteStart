@@ -2,7 +2,9 @@
 <img src="https://raw.githubusercontent.com/SivertGullbergHansen/GolfMk4RemoteStart/main/Media/logo.png" style="max-width: 100%;" width="25%"><br/><br/>
 <img src="https://raw.githubusercontent.com/SivertGullbergHansen/GolfMk4RemoteStart/main/Media/title.png" style="max-width: 100%;" width="60%"><br/></p>
 
+<p align=”center”>
 [![GitHub issues](https://img.shields.io/github/issues/SivertGullbergHansen/GolfMk4RemoteStart)](https://github.com/SivertGullbergHansen/GolfMk4RemoteStart/issues) [![GitHub forks](https://img.shields.io/github/forks/SivertGullbergHansen/GolfMk4RemoteStart)](https://github.com/SivertGullbergHansen/GolfMk4RemoteStart/network) [![GitHub stars](https://img.shields.io/github/stars/SivertGullbergHansen/GolfMk4RemoteStart)](https://github.com/SivertGullbergHansen/GolfMk4RemoteStart/stargazers) [![GitHub license](https://img.shields.io/github/license/SivertGullbergHansen/GolfMk4RemoteStart)](https://github.com/SivertGullbergHansen/GolfMk4RemoteStart)
+</p>
 
 ## Requirements
 - :computer: An arduino
