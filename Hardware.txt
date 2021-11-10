@@ -1,0 +1,9 @@
+Hardware used:
+Arduino nano
+SIM800L
+Buck converter
+2 dual relay modules with built in octocupler. 30 amp
+
+Resistors:
+12V measuring; R1 = 10k, R2 = 5k
+Ignition hot step down; R1 = 550ohm, R2 = 220ohm
