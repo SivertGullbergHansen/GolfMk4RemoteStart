@@ -53,6 +53,7 @@ float R1 = 9730;
 float R2 = 4580;
 // ====================================================================================
 
+
 void pinSetup() // Initialize arduino pins
 {
   pinMode(ignPin, OUTPUT);
