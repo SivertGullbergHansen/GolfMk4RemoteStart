@@ -20,7 +20,7 @@
 <br>
 <br>
 
-<h1>Description</h1>
+<h1 align="center">Description</h1>
 <p>
 This Arduino sketch is specifically made and tested for a Volkswagen Golf MK4 GTI, but it will most likely work on older cars as long as the immobilizer is removed/defeated.
 
@@ -35,7 +35,7 @@ We recommend using a prepaid card for your sim, as it is free to receive message
 <br>
 <br>
 
-<h1>Requirements</h1>
+<h1 align="center">Requirements</h1>
 <p>These items are required for our sketch to work.</p>
 <ol>
   <li>💻 An arduino</li>
@@ -49,3 +49,11 @@ We recommend using a prepaid card for your sim, as it is free to receive message
 <ol>
   <li>🖨️ A 3D-printer to print our case for the arduino and a relay-box</li>
 </ol>
+
+<br>
+<br>
+<br>
+
+<h1 align="center">How To</h1>
+<h2>Use our sketch</h2>
+<p>To use our sketch, you will need to upload our .ino file to your arduino-board. <i>Make sure you've changed all necessary values before uploading and that you've properly hooked the arduino to your sim-reader and your vehicle before powering on the arduino.</i></p>
