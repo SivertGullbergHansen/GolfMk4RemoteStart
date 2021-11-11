@@ -1,9 +1,11 @@
 Hardware used:
-Arduino nano
-SIM800L
-Buck converter
-2 dual relay modules with built in octocupler. 30 amp
+Arduino nano : https://www.ebay.com/itm/253638131454?epid=12026707908&hash=item3b0e02befe:g:Ui8AAOSwNo9gt8jz 
+SIM800L : https://www.ebay.com/itm/193612238181
+Buck converter : https://www.ebay.com/itm/273157036523
+2 dual relay modules with built in octocupler. 30 amp : https://www.ebay.com/itm/272565679171
+
+
 
 Resistors:
-12V measuring; R1 = 10k, R2 = 5k
-Ignition hot step down; R1 = 550ohm, R2 = 220ohm
+Measuring the battery voltage of the car; R1 = 10k, R2 = 5k
+Step down circut for the IgnitionHot function; R1 = 550ohm, R2 = 220ohm
