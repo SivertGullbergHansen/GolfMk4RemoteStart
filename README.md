@@ -26,7 +26,7 @@ This Arduino sketch is specifically made and tested for a Volkswagen Golf MK4 GT
 
 You will need to have a neutral switch in your car if it is a manual car, you can easily connect this switch to an arduino pin.
 
-Our Arduino Sketch requires a SIM card-reader that you can send SMS messages to. We wrote the sketch specifically for the **sim800l gsm module**.
+Our Arduino Sketch requires a SIM card-reader that you can send SMS messages to. We wrote the sketch specifically for the <a href="https://www.amazon.com/dp/B01DLIJM2E"><strong>sim800l gsm module</strong></a>.
 We recommend using a prepaid card for your sim, as it is free to receive messages.
 
 </p>
