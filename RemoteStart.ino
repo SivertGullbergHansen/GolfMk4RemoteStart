@@ -10,28 +10,28 @@ SoftwareSerial sim800l(3, 2); //SIM800L TX and RX pins
 
 // User variables (You have to change these)
 // ====================================================================================
-String userPhone = "95756768";                                           // Whitelisted phone number (country code not required)
+String userPhone = "95756768";                                              // Whitelisted phone number (country code not required)
 String statusString = "The engine is X,\nThe running time is set to Y min"; // The string we return to the userPhone when asking for a status. X is engineStatus, Y is RunTime
-String engineStopped = "stopped";                                        // Used in status-string
-String engineStarted = "started";                                        // Used in status-string
+String engineStopped = "stopped";                                           // Used in status-string
+String engineStarted = "started";                                           // Used in status-string
 // ====================================================================================
 
 // Arduino to car pins (Change if you're not using the same digital pins on the arduino as me)
 // ====================================================================================
-int ignPin = 4; // Gives power to the ignition
-int startPin = 5; //Activates the starter solenoid
-int lightFanPin = 6; //Turns lights and blower motor on
+int ignPin = 4;         // Gives power to the ignition
+int startPin = 5;       //Activates the starter solenoid
+int lightFanPin = 6;    //Turns lights and blower motor on
 int NeutSwitchPin = 11; // Tells us if the car is in neutral
-int IgnHotPin = 12; //Telles us if sommebody has insterted the key into the ignition
+int IgnHotPin = 12;     //Telles us if sommebody has insterted the key into the ignition
 int voltagePin = 5;
 // ====================================================================================
 
 // Commands (These will be looked for as trigger words in the SMS you send to the car, change these to your own language)
 // ====================================================================================
-String cmdStatus = "status"; //Sends an status reply to the userPhone, when an SMS with the word "status" is recived
-String cmdChangeTime = "change"; //Changes the runTime when an SMS with the word "endre" is recieved with an number between 1 - 40 min. 
-String cmdStart = "start"; //Trigger word for the engine to start
-String cmdStop = "stop"; //Trigger word for the engine to stop, this will also send and reply to the userPhone that the engine is stopped
+String cmdStatus = "status";     //Sends an status reply to the userPhone, when an SMS with the word "status" is recived
+String cmdChangeTime = "change"; //Changes the runTime when an SMS with the word "endre" is recieved with an number between 1 - 40 min.
+String cmdStart = "start";       //Trigger word for the engine to start
+String cmdStop = "stop";         //Trigger word for the engine to stop, this will also send and reply to the userPhone that the engine is stopped
 // ====================================================================================
 
 // Timers (You don't have to change these)
@@ -43,14 +43,14 @@ int maxTime = 40;      // max minutes RunTime is allowed to be set to by the use
 
 //Timers for the engine start procedure(Change these if necesarry)
 // ====================================================================================
-int primeTime = 2000; //This is the time the engine is primed for, on petrol cars this doesnt need to be long. But on diesel cars this may be set to longer for the glowplug to warm up
-int startTime = 2000; //This is the timer that controlls how long the starter should be engaged, change accordingly
+int primeDuration = 2000;   //This is the time the engine is primed for, on petrol cars this doesnt need to be long. But on diesel cars this may be set to longer for the glowplug to warm up
+int starterDuration = 2000; //This is the timer that controlls how long the starter should be engaged, change accordingly
 // ====================================================================================
 
 //Resisotrs for voltage devider(Change these if necesarry)
 // ====================================================================================
 float R1 = 9730;
-float R2 = 4580; 
+float R2 = 4580;
 // ====================================================================================
 
 void pinSetup() // Initialize arduino pins
@@ -87,7 +87,7 @@ void changePin(int Pin, int PinMode, int DelayTime)
   delay(DelayTime);
 }
 
-void sendStatus()
+void sendStatus() // Sends a reply to the userPhone including vehicle-status
 {
   String Running = "";
   String returnString = statusString;
@@ -104,27 +104,24 @@ void sendStatus()
   Reply(returnString);
 }
 
-void changeRunTime()
+void changeRunTime() // Changes how long the engine stays powered on before powering down
 {
-
 }
 
-void startEngine()
+void startEngine() // Starts our engine
 {
-  changePin(ignPin, 1, primeTime);
-  changePin(startPin, 1, startTime);
-  changePin(startPin, 0, startTime);
+  changePin(ignPin, 1, primeDuration);
+  changePin(startPin, 1, starterDuration);
+  changePin(startPin, 0, starterDuration);
   digitalWrite(lightFanPin, HIGH);
   startTime = millis();
   delay(2000);
 
-  if (batteryVoltage < 13)
-  {
-    Reply("Engine has failed starting, please retry")
-  }
+  if (batteryVoltage() < 13)
+    Reply("Engine has failed starting, please retry");
 }
 
-void stopEngine()
+void stopEngine() // Stops our engine
 {
   digitalWrite(ignPin, LOW);
   digitalWrite(startPin, LOW);
@@ -185,8 +182,9 @@ void CheckPhone(String messageString) // Compares userPhone-value to message's p
   }
 }
 
-void batteryVoltage();
+int batteryVoltage()
 {
+  return 0;
 }
 
 void engineLoop() // Checks our engine's status and applies measures
