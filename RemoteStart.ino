@@ -53,7 +53,6 @@ float R1 = 9730;
 float R2 = 4580;
 // ====================================================================================
 
-//Sivert har liten tiss
 
 void pinSetup() // Initialize arduino pins
 {
