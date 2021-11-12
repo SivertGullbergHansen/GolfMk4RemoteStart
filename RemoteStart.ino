@@ -1,6 +1,6 @@
 // ====================================================================================
 // Authors: Sigurd Myhre & Sivert Gullberg Hansen
-// Version: 4.0
+// Version: 5.0
 // Required Modules: SIM800L
 // ====================================================================================
 
@@ -11,10 +11,11 @@ SoftwareSerial sim800l(3, 2); //SIM800L TX and RX pins
 
 // User variables (You have to change these)
 // ====================================================================================
-String userPhone = "95756768";                                              // Whitelisted phone number (country code not required)
-String statusString = "The engine is X,\nThe running time is set to Y min"; // The string we return to the userPhone when asking for a status. X is engineStatus, Y is RunTime
-String engineStopped = "stopped";                                           // Used in status-string
-String engineStarted = "started";                                           // Used in status-string
+String userPhone = "95756768";                                         // Whitelisted phone number (country code not required)
+String statusString = "The engine is X,\nThe run time is set to Ymin"; // The string we return to the userPhone when asking for a status. X is engineStatus, Y is RunTime
+String engineStopped = "stopped";                                      // Used in status-string
+String engineStarted = "started";                                      // Used in status-string
+int maxStartAttempts = 3;
 // ====================================================================================
 
 // Arduino to car pins (Change if you're not using the same digital pins on the arduino as me)
@@ -39,14 +40,14 @@ String cmdStop = "stop";         //Trigger word for the engine to stop, this wil
 // ====================================================================================
 long startTime = 0;    // Which time our engine started running
 long RunTime = 900000; // ms to have engine running before shutting off after starting
-int maxTime = 40;      // max minutes RunTime is allowed to be set to by the user via SMS
+int maxRunTime = 30;   // max minutes RunTime is allowed to be set to by the user via SMS
 // ====================================================================================
 
 //Timers for the engine start procedure(Change these if necesarry)
 // ====================================================================================
-int primeDuration = 2000;      //This is the time the engine is primed for, on petrol cars this doesnt need to be long. But on diesel cars this may be set to longer for the glowplug to warm up
-int starterMaxDuration = 2800; //This is the maximum time for our starter to be enganged
-int starterDelay = 1000;       //This is the time between shutting the starterPin off
+int primeDuration = 3000;      //This is the time the engine is primed for, on petrol cars this doesnt need to be long. But on diesel cars this may be set to longer for the glowplug to warm up
+int starterMaxDuration = 3000; //This is the maximum time for our starter to be enganged
+int starterDelay = 2000;       //This is the time between shutting the starterPin off and checking voltages
 // ====================================================================================
 
 //Resistors for voltage devider(Change these if necesarry)
@@ -83,7 +84,7 @@ void sim800Setup() // Initialize sim-reader
   sim800l.println("AT+CNMI=1,2,0,0,0"); // Decides how newly arrived SMS messages should be handled
 }
 
-void changePin(int Pin, int PinMode, int DelayTime)
+void changePin(int Pin, int PinMode, int DelayTime) // Sets pin to either high or low with a delay after
 {
   digitalWrite(Pin, PinMode);
   delay(DelayTime);
@@ -106,34 +107,40 @@ void sendStatus() // Sends a reply to the userPhone including vehicle-status
   Reply(returnString);
 }
 
-void changeRunTime(string message) // Changes how long the engine stays powered on before powering down
+void changeRunTime(String messageString) // Changes how long the engine stays powered on before powering down
 {
-  int newRunTime = int();
-  RunTime = newRunTime;
+  String msg = messageString;
+  msg = msg.substring(messageString.indexOf(cmdChangeTime) + cmdChangeTime.length() + 1);
+  int newRunTime = msg.toInt();
+
+  if (newRunTime >= maxRunTime || newRunTime <= 0)
+    RunTime = maxRunTime * 60000;
+  else
+    RunTime = newRunTime * 60000;
+
+  Reply("The run time is set to: " + String(RunTime / 60000) + "min");
 }
 
 void startEngine() // Starts our engine
 {
-  if (digitalRead(NeutSwitchPin == HIGH) && digitalRead(IgnHotPin == LOW))
+  if (digitalRead(NeutSwitchPin) == LOW && digitalRead(IgnHotPin) == LOW)
   {
     changePin(ignPin, 1, primeDuration);
-    int currentStarterTime = millis();
-    float currentBatteryVolt = 0;
+    long currentStarterTime = millis();
 
-    while (
-        batteryVoltage() > currentBatteryVolt + 1 ||
-        batteryVoltage() > 13 ||
-        millis() - currentStarterTime <= starterMaxDuration)
+    while (true)
     {
-      changePin(startPin, 1, 0); // Set starter to ON
-      currentBatteryVolt = batteryVoltage();0
-      Serial.println("Starter engaged");
+      changePin(startPin, 1, 0); // Set starter to ON with 0 delay
+
+      if (batteryVoltage() > 15 || millis() - currentStarterTime >= starterMaxDuration)
+      {
+        break;
+      }
     }
 
-    Serial.println("Starter disengaged");
     changePin(startPin, 0, starterDelay); // Set starter to OFF
 
-    if (batteryVoltage() > 13)
+    if (batteryVoltage() > 15)
     {
       digitalWrite(lightFanPin, HIGH);
       startTime = millis();
@@ -141,10 +148,12 @@ void startEngine() // Starts our engine
     }
     else
     {
-      Reply("Engine has failed starting, retrying");
-      startEngine();
+      changePin(ignPin, 0, 0);
+      Reply("Engine has failed starting, starter max duration reached"); //Runs the startEngine loop again if it detected that the engine has not started
     }
   }
+  else if (digitalRead(NeutSwitchPin) == LOW)
+    Reply("Failed to start, car is in gear!");
 }
 
 void stopEngine() // Stops our engine
@@ -152,12 +161,12 @@ void stopEngine() // Stops our engine
   digitalWrite(ignPin, LOW);
   digitalWrite(startPin, LOW);
   digitalWrite(lightFanPin, LOW);
-  Reply("Engine is stopped"); //Change this if you want to change what the reply text is for when the stop command is sent
+  Reply("Engine has stopped"); //Change this if you want to change what the reply text is for when the stop command is sent
 }
 
 void readCommand(String messageString) // Read commands from messageStrings
 {
-  Serial.println("Message Received: \n" + messageString);
+  Serial.println("Message Received: " + messageString);
 
   if (messageString.indexOf(cmdStatus) >= 0)
   {
@@ -167,7 +176,7 @@ void readCommand(String messageString) // Read commands from messageStrings
   else if (messageString.indexOf(cmdChangeTime) >= 0)
   {
     Serial.println("Command: Change Time Confirmed");
-    changeRunTime();
+    changeRunTime(messageString);
   }
   else if (messageString.indexOf(cmdStart) >= 0)
   {
@@ -202,10 +211,6 @@ void CheckPhone(String messageString) // Compares userPhone-value to message's p
   {
     readCommand(messageString);
   }
-  else if (messageString.length() > 18)
-  {
-    Serial.println("Phone number invalid! Has to be: " + userPhone);
-  }
 }
 
 float batteryVoltage()
@@ -215,7 +220,7 @@ float batteryVoltage()
 
 void engineLoop() // Checks our engine's status and applies measures
 {
-  if (digitalRead(IgnHotPin) == HIGH) // If key is turned while remote start active, disable remote start-script
+  if (digitalRead(IgnHotPin) == HIGH) // If key is insterted while remote start active, then this will disable the remote start-script
   {
     digitalWrite(startPin, LOW);
     digitalWrite(ignPin, LOW);
@@ -229,9 +234,18 @@ void engineLoop() // Checks our engine's status and applies measures
   }
 }
 
+void changeCommandsToLowercase()
+{
+  cmdChangeTime.toLowerCase();
+  cmdStatus.toLowerCase();
+  cmdStart.toLowerCase();
+  cmdStop.toLowerCase();
+}
+
 void setup() // Setup arduino
 {
-  Serial.begin(115200); //Start serial over USB at speed 115200
+  changeCommandsToLowercase(); // Changes all commands to lower-case
+  Serial.begin(115200);        //Start serial over USB at speed 115200
   sim800Setup();
   pinSetup();
 }
@@ -264,8 +278,8 @@ void Reply(String text) // Sends a reply to our phone
   sim800l.print("AT+CMGS=\"" + userPhone + "\"\r");
   delay(1000);
   sim800l.print(text);
-  delay(100);
+  delay(300);
   sim800l.write(0x1A); //ascii code for ctrl-26 //sim800.println((char)26); //ascii code for ctrl-26
-  delay(1000);
+  delay(500);
   Serial.println("SMS Sent Successfully.");
 }
