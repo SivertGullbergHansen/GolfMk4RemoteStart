@@ -5,6 +5,7 @@
 // ====================================================================================
 
 #include <SoftwareSerial.h>
+#include <Regexp.h>
 
 SoftwareSerial sim800l(3, 2); //SIM800L TX and RX pins
 
@@ -19,8 +20,8 @@ String engineStarted = "started";                                           // U
 // Arduino to car pins (Change if you're not using the same digital pins on the arduino as me)
 // ====================================================================================
 int ignPin = 4;         // Gives power to the ignition
-int startPin = 5;       //Activates the starter solenoid
-int lightFanPin = 6;    //Turns lights and blower motor on
+int startPin = 6;       //Activates the starter solenoid
+int lightFanPin = 7;    //Turns lights and blower motor on
 int NeutSwitchPin = 11; // Tells us if the car is in neutral
 int IgnHotPin = 12;     //Telles us if sommebody has insterted the key into the ignition
 int voltagePin = 5;
@@ -43,16 +44,16 @@ int maxTime = 40;      // max minutes RunTime is allowed to be set to by the use
 
 //Timers for the engine start procedure(Change these if necesarry)
 // ====================================================================================
-int primeDuration = 2000;   //This is the time the engine is primed for, on petrol cars this doesnt need to be long. But on diesel cars this may be set to longer for the glowplug to warm up
-int starterDuration = 2000; //This is the timer that controlls how long the starter should be engaged, change accordingly
+int primeDuration = 2000;      //This is the time the engine is primed for, on petrol cars this doesnt need to be long. But on diesel cars this may be set to longer for the glowplug to warm up
+int starterMaxDuration = 2800; //This is the maximum time for our starter to be enganged
+int starterDelay = 1000;       //This is the time between shutting the starterPin off
 // ====================================================================================
 
-//Resisotrs for voltage devider(Change these if necesarry)
+//Resistors for voltage devider(Change these if necesarry)
 // ====================================================================================
-float R1 = 9730;
-float R2 = 4580;
+float R1 = 9700;
+float R2 = 5040;
 // ====================================================================================
-
 
 void pinSetup() // Initialize arduino pins
 {
@@ -105,21 +106,45 @@ void sendStatus() // Sends a reply to the userPhone including vehicle-status
   Reply(returnString);
 }
 
-void changeRunTime() // Changes how long the engine stays powered on before powering down
+void changeRunTime(string message) // Changes how long the engine stays powered on before powering down
 {
+  int newRunTime = int();
+  RunTime = newRunTime;
 }
 
 void startEngine() // Starts our engine
 {
-  changePin(ignPin, 1, primeDuration);
-  changePin(startPin, 1, starterDuration);
-  changePin(startPin, 0, starterDuration);
-  digitalWrite(lightFanPin, HIGH);
-  startTime = millis();
-  delay(2000);
+  if (digitalRead(NeutSwitchPin == HIGH) && digitalRead(IgnHotPin == LOW))
+  {
+    changePin(ignPin, 1, primeDuration);
+    int currentStarterTime = millis();
+    float currentBatteryVolt = 0;
 
-  if (batteryVoltage() < 13)
-    Reply("Engine has failed starting, please retry");
+    while (
+        batteryVoltage() > currentBatteryVolt + 1 ||
+        batteryVoltage() > 13 ||
+        millis() - currentStarterTime <= starterMaxDuration)
+    {
+      changePin(startPin, 1, 0); // Set starter to ON
+      currentBatteryVolt = batteryVoltage();0
+      Serial.println("Starter engaged");
+    }
+
+    Serial.println("Starter disengaged");
+    changePin(startPin, 0, starterDelay); // Set starter to OFF
+
+    if (batteryVoltage() > 13)
+    {
+      digitalWrite(lightFanPin, HIGH);
+      startTime = millis();
+      delay(2000);
+    }
+    else
+    {
+      Reply("Engine has failed starting, retrying");
+      startEngine();
+    }
+  }
 }
 
 void stopEngine() // Stops our engine
@@ -127,7 +152,7 @@ void stopEngine() // Stops our engine
   digitalWrite(ignPin, LOW);
   digitalWrite(startPin, LOW);
   digitalWrite(lightFanPin, LOW);
-  Reply("Engine is stopped");
+  Reply("Engine is stopped"); //Change this if you want to change what the reply text is for when the stop command is sent
 }
 
 void readCommand(String messageString) // Read commands from messageStrings
@@ -183,9 +208,9 @@ void CheckPhone(String messageString) // Compares userPhone-value to message's p
   }
 }
 
-int batteryVoltage()
+float batteryVoltage()
 {
-  return 0;
+  return analogRead(A5) * (5.0 / 1023) * ((R1 + R2) / R2); //AnalogRead A5 is the input on the arduino for the batteryVoltage sensor
 }
 
 void engineLoop() // Checks our engine's status and applies measures
@@ -215,6 +240,7 @@ void loop() // Arduino loop
 {
   updateSerial();
   engineLoop();
+  Serial.println(batteryVoltage());
 }
 
 void updateSerial() // Our update loop, updating sim-reader and arduino serial-port when available
